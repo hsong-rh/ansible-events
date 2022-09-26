@@ -451,8 +451,19 @@ async def pre_process_runner(
 
     job_id = str(uuid.uuid4())
 
+    with open(os.path.join(private_data_dir, "project", playbook_name)) as f:
+        playbook = f.read()
+
     await event_log.put(
-        dict(type="Job", job_id=job_id, ansible_events_id=settings.identifier)
+        dict(
+            type="Job",
+            job_id=job_id,
+            ansible_events_id=settings.identifier,
+            playbook_name=playbook_name,
+            playbook=playbook,
+            inventory=yaml.dump(inventory),
+            extra_vars=yaml.dump(variables),
+        )
     )
     return (private_data_dir, playbook_name, job_id)
 
